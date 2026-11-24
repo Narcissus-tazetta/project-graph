@@ -1,0 +1,18 @@
+# 各プロジェクトの配布元 ID。github は "owner/repo"、modrinth と curseforge は slug。
+projects:
+  - id: xaeronav
+    name: XaeroNav
+    github: Narcissus-tazetta/XaeroNav
+    modrinth: xaeronav
+  - id: livewallpaper
+    name: LiveWallpaper
+    github: Narcissus-tazetta/LiveWallpaper
+  - id: curstyle
+    name: Curstyle
+    github: Narcissus-tazetta/Curstyle
+  - id: ceyrad
+    name: Ceyrad
+    github: Narcissus-tazetta/Ceyrad
+  - id: dockmorph
+    name: DockMorph
+    github: Narcissus-tazetta/DockMorph

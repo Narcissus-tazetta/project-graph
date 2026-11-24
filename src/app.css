@@ -1,0 +1,59 @@
+@import '@fontsource-variable/inter';
+
+:root {
+	--bg: #0a0c10;
+	--fg: #f5f6f8;
+	--muted: #8b93a1;
+	--line: #1c2028;
+	--card: #0f1218;
+	--accent: #4c8dff;
+	color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--bg: #ffffff;
+		--fg: #0b0d12;
+		--muted: #5c6573;
+		--line: #e6e8ec;
+		--card: #f6f7f9;
+		--accent: #2563eb;
+		color-scheme: light;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--fg);
+	font-family: 'Inter Variable', system-ui, sans-serif;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+h1,
+h2 {
+	letter-spacing: -0.03em;
+	line-height: 1.15;
+	margin: 0;
+}
+
+.label {
+	color: var(--accent);
+	font-weight: 600;
+	font-size: 14px;
+	margin: 0 0 8px;
+}
+
+.num {
+	font-variant-numeric: tabular-nums;
+}
