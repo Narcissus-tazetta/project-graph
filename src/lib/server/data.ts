@@ -27,6 +27,8 @@ export interface ProjectData {
   daily: DailyPoint[];
   firstRecordedAt: string | null;
   updatedAt: string | null;
+  /** 累計が最後に増えた時刻。まだ増えていなければ記録開始時刻 */
+  changedAt: string | null;
 }
 
 function readHistory(id: string): Snapshot[] {
@@ -58,6 +60,13 @@ function toDaily(history: Snapshot[]): DailyPoint[] {
   return [...byDay].map(([day, total]) => ({ day, total }));
 }
 
+function lastChangedAt(history: Snapshot[]): string | null {
+  for (let i = history.length - 1; i > 0; i--) {
+    if (totalOf(history[i]) !== totalOf(history[i - 1])) return history[i].t;
+  }
+  return history[0]?.t ?? null;
+}
+
 export function loadProjects(): ProjectData[] {
   const config = parse(readFileSync("projects.yml", "utf8")) as { projects: ProjectConfig[] };
   return config.projects.map((p) => {
@@ -75,6 +84,7 @@ export function loadProjects(): ProjectData[] {
       daily: toDaily(history),
       firstRecordedAt: history[0]?.t ?? null,
       updatedAt: latest?.t ?? null,
+      changedAt: lastChangedAt(history),
     };
   });
 }

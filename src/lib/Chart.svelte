@@ -10,12 +10,14 @@
 	let {
 		series,
 		days,
-		mode
-	}: { series: Series[]; days: string[]; mode: 'line' | 'bar' } = $props();
+		mode,
+		compact = false
+	}: { series: Series[]; days: string[]; mode: 'line' | 'bar'; compact?: boolean } = $props();
 
+	// compact は一覧の各行に置く軸なしの小グラフ。行全体がリンクなのでホバー操作は持たせない
 	const W = 720;
-	const H = 260;
-	const PAD = { l: 52, r: 12, t: 12, b: 26 };
+	const H = $derived(compact ? 72 : 260);
+	const PAD = $derived(compact ? { l: 4, r: 4, t: 6, b: 6 } : { l: 52, r: 12, t: 12, b: 26 });
 
 	// 棒グラフは両端の棒が軸ラベルに被らないよう、帯の中央に置く
 	const xs = $derived(
@@ -31,7 +33,18 @@
 		for (const s of series) for (const d of days) m = Math.max(m, s.values[d] ?? 0);
 		return m === 0 ? 1 : m;
 	});
-	const y = (v: number) => PAD.t + (1 - v / yMax) * (H - PAD.t - PAD.b);
+	// 小グラフは0始まりだと累計の増加が潰れて傾向が読めないため、最小値〜最大値に合わせる
+	const yMin = $derived.by(() => {
+		if (!compact) return 0;
+		let m = Infinity;
+		for (const s of series) for (const d of days) m = Math.min(m, s.values[d] ?? Infinity);
+		return m === Infinity ? 0 : m;
+	});
+	const y = (v: number) => {
+		const span = yMax - yMin;
+		const r = span === 0 ? 0.5 : (v - yMin) / span;
+		return PAD.t + (1 - r) * (H - PAD.t - PAD.b);
+	};
 
 	const ticks = $derived([0, 0.25, 0.5, 0.75, 1].map((r) => Math.round(yMax * r)));
 
@@ -55,19 +68,26 @@
 
 <div class="chart">
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<svg viewBox="0 0 {W} {H}" role="img" onmousemove={onMove} onmouseleave={() => (hover = null)}>
-		{#each ticks as tick (tick)}
-			<line x1={PAD.l} x2={W - PAD.r} y1={y(tick)} y2={y(tick)} class="grid" />
-			<text x={PAD.l - 8} y={y(tick) + 4} class="axis" text-anchor="end">{fmt(tick)}</text>
-		{/each}
-		<text x={PAD.l} y={H - 6} class="axis">{days[0]}</text>
-		<text x={W - PAD.r} y={H - 6} class="axis" text-anchor="end">{days.at(-1)}</text>
+	<svg
+		viewBox="0 0 {W} {H}"
+		role="img"
+		onmousemove={compact ? undefined : onMove}
+		onmouseleave={() => (hover = null)}
+	>
+		{#if !compact}
+			{#each ticks as tick (tick)}
+				<line x1={PAD.l} x2={W - PAD.r} y1={y(tick)} y2={y(tick)} class="grid" />
+				<text x={PAD.l - 8} y={y(tick) + 4} class="axis" text-anchor="end">{fmt(tick)}</text>
+			{/each}
+			<text x={PAD.l} y={H - 6} class="axis">{days[0]}</text>
+			<text x={W - PAD.r} y={H - 6} class="axis" text-anchor="end">{days.at(-1)}</text>
+		{/if}
 
 		{#each series as s (s.label)}
 			{#if mode === 'line'}
 				<polyline points={path(s)} fill="none" stroke={s.color} stroke-width="2" stroke-linejoin="round" />
 				{#each days as d, i (d)}
-					{#if s.values[d] !== undefined && days.length <= 40}
+					{#if !compact && s.values[d] !== undefined && days.length <= 40}
 						<circle cx={xs[i]} cy={y(s.values[d])} r="2.5" fill={s.color} />
 					{/if}
 				{/each}
@@ -97,7 +117,7 @@
 		</div>
 	{/if}
 
-	{#if series.length > 1}
+	{#if !compact && series.length > 1}
 		<ul class="legend">
 			{#each series as s (s.label)}
 				<li><span class="dot" style:background={s.color}></span>{s.label}</li>

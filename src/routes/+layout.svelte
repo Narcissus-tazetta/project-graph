@@ -1,10 +1,14 @@
 <script lang="ts">
 	import '../app.css';
+	import Select from '#lib/Select.svelte';
 	import favicon from '#lib/assets/favicon.svg';
+	import { GRAPH_MODES, graph, restoreGraphMode, saveGraphMode } from '#lib/graphMode.svelte.ts';
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
+	onMount(restoreGraphMode);
 </script>
 
 <svelte:head>
@@ -15,7 +19,16 @@
 <header>
 	<div class="bar">
 		<a class="brand" href={resolve('/')}>Downloads</a>
-		<a class="nav" href="https://github.com/Narcissus-tazetta/project-graph">GitHub</a>
+		<div class="setting">
+			<span class="setting-label">Graph</span>
+			<Select
+				options={GRAPH_MODES}
+				bind:value={graph.mode}
+				label="Graph"
+				align="right"
+				onchange={saveGraphMode}
+			/>
+		</div>
 	</div>
 </header>
 
@@ -43,11 +56,17 @@
 		font-weight: 600;
 		font-size: 18px;
 	}
-	.nav {
+	.setting {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
 		color: var(--muted);
 	}
-	.nav:hover {
-		color: var(--fg);
+	@media (max-width: 480px) {
+		.setting-label {
+			display: none;
+		}
 	}
 	main {
 		padding-top: 48px;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Chart from '#lib/Chart.svelte';
 	import { fmt, fmtDateTime, fmtDelta } from '#lib/format.ts';
+	import { graph, pointsFor, toValues } from '#lib/graphMode.svelte.ts';
 	import { PERIOD_KEYS } from '#lib/periods.ts';
 	import { SOURCE_LABELS, SOURCES } from '#lib/types.ts';
 	import { resolve } from '$app/paths';
@@ -18,18 +19,9 @@
 			.join(' · ')
 	);
 
-	const days = $derived(p.daily.map((d) => d.day));
-	const cumulative = $derived([
-		{ label: p.name, color: '#4c8dff', values: Object.fromEntries(p.daily.map((d) => [d.day, d.total])) }
-	]);
-	// 初日は前日との差が取れないため棒グラフには出さない
-	const increases = $derived([
-		{
-			label: 'Daily increase',
-			color: '#34c4a0',
-			values: Object.fromEntries(p.daily.slice(1).map((d, i) => [d.day, d.total - p.daily[i].total]))
-		}
-	]);
+	const points = $derived(pointsFor(p.daily, graph.mode));
+	const days = $derived(points.map((d) => d.day));
+	const series = $derived([{ label: p.name, color: '#4c8dff', values: toValues(points) }]);
 </script>
 
 <a class="back" href={resolve('/')}>← All projects</a>
@@ -59,18 +51,13 @@
 	{/each}
 </div>
 
-<p class="label sec">Total over time</p>
+<p class="label sec">{graph.mode === 'total' ? 'Total over time' : 'Daily increase'}</p>
 {#if days.length >= 2}
-	<Chart series={cumulative} {days} mode="line" />
+	<Chart {series} {days} mode="line" />
 {:else}
-	<p class="empty">The chart appears once there are snapshots from two different days.</p>
-{/if}
-
-<p class="label sec">Daily increase</p>
-{#if days.length >= 2}
-	<Chart series={increases} days={days.slice(1)} mode="bar" />
-{:else}
-	<p class="empty">Daily increases appear once there are snapshots from two different days.</p>
+	<p class="empty">
+		The chart appears once there are snapshots from {graph.mode === 'total' ? 'two' : 'three'} different days.
+	</p>
 {/if}
 
 <style>
