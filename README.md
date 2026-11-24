@@ -14,13 +14,13 @@ None of these APIs returns past values, so history starts on the day the first s
 
 ## Adding a project
 
-Add an entry to `projects.yml` (`github` is `owner/repo`; `modrinth` and `curseforge` are slugs).
+Add an entry to `projects.yml` (`github` is `owner/repo`; `modrinth` is a slug, `curseforge` is the numeric project ID).
 
 ## Development
 
 ```bash
 bun install
-bun run fetch    # appends a snapshot to data/history/*.json (needs CURSEFORGE_API_KEY in .env if a project uses CurseForge)
+bun run fetch    # appends a snapshot to data/history/*.json (needs CURSEFORGE_API_KEY in .env if a project uses CurseForge; the key contains `$`, which Bun expands unless each one is written as `\$`)
 bun run dev
 ```
 

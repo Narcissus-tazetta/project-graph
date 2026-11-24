@@ -35,14 +35,10 @@ export async function fetchModrinth(slug: string): Promise<number> {
   return d.downloads;
 }
 
-const CURSEFORGE_MINECRAFT_GAME_ID = 432;
-
-export async function fetchCurseforge(slug: string, apiKey: string): Promise<number> {
-  const d = (await getJson(
-    `https://api.curseforge.com/v1/mods/search?gameId=${CURSEFORGE_MINECRAFT_GAME_ID}&slug=${encodeURIComponent(slug)}`,
-    { "x-api-key": apiKey },
-  )) as { data: { slug: string; downloadCount: number }[] };
-  const mod = d.data.find((m) => m.slug === slug);
-  if (!mod) throw new Error(`CurseForge: slug "${slug}" not found`);
-  return mod.downloadCount;
+// /v1/mods/search は API キーが有効でも 403 になることがあるため、プロジェクト ID を直接引く。
+export async function fetchCurseforge(projectId: number, apiKey: string): Promise<number> {
+  const d = (await getJson(`https://api.curseforge.com/v1/mods/${projectId}`, {
+    "x-api-key": apiKey,
+  })) as { data: { downloadCount: number } };
+  return d.data.downloadCount;
 }

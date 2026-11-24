@@ -6,7 +6,7 @@ export interface ProjectConfig {
   name: string;
   github?: string;
   modrinth?: string;
-  curseforge?: string;
+  curseforge?: number;
 }
 
 export interface Snapshot {

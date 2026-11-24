@@ -1,9 +1,10 @@
-# 各プロジェクトの配布元 ID。github は "owner/repo"、modrinth と curseforge は slug。
+# 各プロジェクトの配布元 ID。github は "owner/repo"、modrinth は slug、curseforge は数値のプロジェクト ID。
 projects:
   - id: xaeronav
     name: XaeroNav
     github: Narcissus-tazetta/XaeroNav
     modrinth: xaeronav
+    curseforge: 1677485
   - id: livewallpaper
     name: LiveWallpaper
     github: Narcissus-tazetta/LiveWallpaper

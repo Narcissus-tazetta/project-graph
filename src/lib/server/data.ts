@@ -39,7 +39,7 @@ function linksOf(p: ProjectConfig): ProjectData["links"] {
     ...(p.github && { github: `https://github.com/${p.github}/releases` }),
     ...(p.modrinth && { modrinth: `https://modrinth.com/project/${p.modrinth}` }),
     ...(p.curseforge && {
-      curseforge: `https://www.curseforge.com/minecraft/mc-mods/${p.curseforge}`,
+      curseforge: `https://www.curseforge.com/projects/${p.curseforge}`,
     }),
   };
 }
