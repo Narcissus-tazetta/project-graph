@@ -1,9 +1,8 @@
 <script lang="ts">
 	import '../app.css';
 	import Select from '#lib/Select.svelte';
-	import favicon from '#lib/assets/favicon.svg';
 	import { GRAPH_MODES, graph, restoreGraphMode, saveGraphMode } from '#lib/graphMode.svelte.ts';
-	import { resolve } from '$app/paths';
+	import { asset, resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import type { LayoutProps } from './$types';
 
@@ -12,8 +11,17 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href={asset('favicon.svg')} type="image/svg+xml" />
 	<title>Downloads</title>
+	<meta name="description" content="Download stats across projects" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Downloads" />
+	<meta property="og:title" content="Downloads" />
+	<meta property="og:description" content="Download stats across projects" />
+	<meta property="og:image" content="https://stats.prason.dev/og.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <header>
